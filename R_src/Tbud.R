@@ -54,4 +54,12 @@ Tbud<-function(inputs){
   }
 }
 
-
+# function to compute air relative humidity (rh) from specific air humidity (qair)
+qair2rh <- function(qair, temp, press = 1013.25){
+  es <-  6.112 * exp((17.67 * temp)/(temp + 243.5))
+  e <- qair * press / (0.378 * qair + 0.622)
+  rh <- e / es
+  rh[rh > 1] <- 1
+  rh[rh < 0] <- 0
+  return(rh)
+}
