@@ -1,0 +1,2 @@
+"SPECIES";"SITE";"PEP_ID";"BBCH";"YEAR";"DAY";"LON";"LAT";"ALT"
+"betula_pendula";"AT";6608;11;1943;98;15.4167;48.3667;223
