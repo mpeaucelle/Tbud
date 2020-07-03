@@ -148,7 +148,7 @@ leq<-which(db$PEP_ID==PEPid[1])
 lm_list[[1]]<-lm(dif08[leq]~db$YEAR[leq])  
 pdf("Figure_3b.pdf",width=10,height=10)
 par(mar=c(6,6,2,2))
-plot(dif08[leq]~db$YEAR[leq], col=NULL,xlab=NULL,ylab=NULL,xaxt='n',yaxt='n',ann=FALSE,ylim=c(-2,5),xlim=c(1970,2015))
+plot(dif08[leq]~db$YEAR[leq], col=NULL,xlab=NULL,ylab=NULL,xaxt='n',yaxt='n',ann=FALSE,ylim=c(-2,5),xlim=c(1990,2015))
 abline(lm_list[[1]],col="darkred")
 # we store the slope, latitude and elevation to see if it explains the observed behavior
 sl<-lm_list[[1]]$coefficients[2]
@@ -194,7 +194,7 @@ leq<-which(db$PEP_ID==PEPid[1])
 lm_list[[1]]<-lm(dif08[leq]~db$YEAR[leq])  
 pdf("Supp_Fig3.pdf",width=10,height=10)
 par(mar=c(6,6,2,2))
-plot(dif08[leq]~db$YEAR[leq], col=NULL,xlab=NULL,ylab=NULL,xaxt='n',yaxt='n',ann=FALSE,ylim=c(-2,5),xlim=c(1970,2015))
+plot(dif08[leq]~db$YEAR[leq], col=NULL,xlab=NULL,ylab=NULL,xaxt='n',yaxt='n',ann=FALSE,ylim=c(-2,5),xlim=c(1990,2015))
 abline(lm_list[[1]],col="darkred")
 # we store the slope, latitude and elevation to see if it explains the observed behavior
 sl<-lm_list[[1]]$coefficients[2]
