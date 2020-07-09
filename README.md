@@ -4,7 +4,7 @@ Add DOI here
 
 This repository contains all R code and datasets to reproduce the analysis used for the paper *Plants are warming faster than climate*.
 
-A detailed description of the scope, method, and algorithms is given by the RMarkdown file `Tbud_perspective.Rmd`. 
+A detailed description of the scope, method, and algorithms is given by the RMarkdown file `./R_src/Tbud_perspective.Rmd`, or the compiled pdf `./R_src/Tbud_perspective.pdf`. 
 
 To get this repository, change into a suitable directory and clone by
 ```bash
@@ -18,7 +18,7 @@ install.packages("rmarkdown", type = "source")
 rmarkdown::render_site()
 ```
 
-Please also note the data use policy, described in `./Tbud_perspective.Rmd` and `./LICENSE`. When using this code, please cite the paper Peaucelle, Penuelas and Verbeeck (2020) *under review*.
+Please also note the data use policy, described in `./R_src/Tbud_perspective.Rmd` and `./LICENSE`. When using this code, please cite the paper Peaucelle, Penuelas and Verbeeck (2020) *under review*.
 This code is also available on [Zenodo](https://zenodo.org/XXX), where the latest version corresponds to tag `XXX `.
 
 Marc Peaucelle, 01.07.2020
