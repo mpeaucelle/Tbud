@@ -2,7 +2,7 @@
 
 Add DOI here
 
-This repository contains all R code and datasets to reproduce the analysis used for the paper *Plants phenological sensitivity to warming resides in their energy budget*.
+This repository contains all R code and datasets to reproduce the analysis used for the paper *Plants phenological sensitivity to warming lies in their energy budget*.
 
 A detailed description of the scope, method, and algorithms is given by the RMarkdown file `./R_src/Tbud_perspective.Rmd`, or the compiled pdf `./R_src/Tbud_perspective.pdf`. 
 
