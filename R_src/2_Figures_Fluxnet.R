@@ -2,7 +2,7 @@
 # 
 # Author: Marc Peaucelle, 2020/06
 # Description:
-# Script to generate Figure 1 & 2 of "Plants are warming faster than climate" (Peaucelle, Penuelas & Verbeeck, 2020)
+# Script to generate Figure 1 & 2 of "Plants phenological sensitivity to warming resides in their energy budget" (Peaucelle, Penuelas & Verbeeck, 2020)
 # FLUXNET data are not provided within this script but can be downloaded after registration at https://fluxnet.fluxdata.org/data/fluxnet2015-dataset/
 # 
 ############################################################

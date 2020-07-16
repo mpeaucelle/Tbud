@@ -2,7 +2,7 @@
 # 
 # Author: Marc Peaucelle, 2020/06
 # Description:
-# Script to generate Figure3, 4 and supplementary Figures of "Plants are warming faster than climate" (Peaucelle, Penuelas & Verbeeck, 2020)
+# Script to generate Figure3, 4 and supplementary Figures of "Plants phenological sensitivity to warming resides in their energy budget" (Peaucelle, Penuelas & Verbeeck, 2020)
 # Phenological observations were replaced in the Betula database were replaced by -1
 # Please register to the PEP website to download phenological observations that are freely available at http://www.pep725.eu/
 # Data provided in the databases were generated with the script 0.0_create_database_Tbud.R
@@ -304,6 +304,19 @@ dev.off()
 plot(sl~lat)
 plot(sl~elv)
 # latitude and elevation do not explain the slope. 
+
+# Mean GDD
+# with Tair
+mean(db$FORC,na.rm=T)
+sd(db$FORC,na.rm=T)
+
+# with Tbud, alpha=0.8
+mean(db$FORCB08,na.rm=T)
+sd(db$FORCB08,na.rm=T)
+
+# with Tbud, alpha=0.5
+mean(db$FORCB05,na.rm=T)
+sd(db$FORCB05,na.rm=T)
 
 
 ########### Finally we look at the components of the energy budget in explaining the variability in deltaT

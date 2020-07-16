@@ -1,14 +1,13 @@
 ---
-title: Supplementary information to "True phenological sensitivity to warming resides
-  in plant energy budget, not air temperature"
+title: Supplementary information to "Plants phenological sensitivity to warming resides in their energy budget"
 author: "Marc Peaucelle, Josep Penuelas and Hans Verbeeck"
 date: "`r Sys.Date()`"
 output:
-  pdf_document:
-    toc: yes
   html_document:
     toc: yes
     toc_float: yes
+  pdf_document:
+    toc: yes
 header-includes: \usepackage{amsmath}
 bibliography: bibliography.bib
 ---
@@ -18,7 +17,7 @@ bibliography: bibliography.bib
 
 *Article acceptance date:* under review
 
-This R-Markdown document provides the instructions for executing the analysis and producing figures presented in the paper *True phenological sensitivity to warming resides in plant energy budget, not air temperatur* by Peaucelle, Penuelas and Verbeeck (2020, under review). 
+This R-Markdown document provides the instructions for executing the analysis and producing figures presented in the paper *Plants phenological sensitivity to warming resides in their energy budget* by Peaucelle, Penuelas and Verbeeck (2020, submitted). 
 All data used for the analyses are freely available after registration on the respective website: 
 
 * PEP data: http://www.pep725.eu/

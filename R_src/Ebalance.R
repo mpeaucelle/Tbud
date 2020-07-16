@@ -138,16 +138,16 @@ nu_constant<-function(Re,type,T_air,Tbud){
   # Nu_forced, Re>50 Nu = 0.34Re^0.6
   if (type==1) { # type = forced
     # laminar flow
-    if (Re <= 4000){
-      a = 0.6
+    if (Re <= 300){
+      a = 0.54
       b = 0.5
     } else {
       # turbulent flow
-      a = 0.032
-      b = 0.8
+      a = 0.34
+      b = 0.6
     }
   } else{ # type = free
-      a = 0.5
+      a = 0.54
       b = 0.25
   }
   ############### Values for leaves avilable in the tealeaves package, Muir 2019 ##################
