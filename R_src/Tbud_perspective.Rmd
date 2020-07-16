@@ -1,13 +1,13 @@
 ---
-title: Supplementary information to "Plants phenological sensitivity to warming resides in their energy budget"
+title: Supplementary information to "Plants phenological sensitivity to warming lies in their energy budget"
 author: "Marc Peaucelle, Josep Penuelas and Hans Verbeeck"
 date: "`r Sys.Date()`"
 output:
+  pdf_document:
+    toc: yes
   html_document:
     toc: yes
     toc_float: yes
-  pdf_document:
-    toc: yes
 header-includes: \usepackage{amsmath}
 bibliography: bibliography.bib
 ---
