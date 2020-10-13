@@ -4,6 +4,12 @@
 # Description:
 # This function computes the bud energy balance as described in Hamer et al. 1985, and Landsberg et al. 1974
 # and is adapted from the tealeaves R package (Muir 2019)
+#
+# Important Note: This model is simplified to represent idealized conditions.
+# To have robust simulations of bud temperature and to use this approach to model phenology, 
+# a proper calibration of model parameters, including bud traits (e.g. solar absorptivity, size and shape), but also the surrounding environment (e.g. ground albedo and soil temperature)
+# Running the model with micrometeorological data should also produce better results for bud temperature
+#
 # References: 
 #     - Landsberg, J. J., Butler, D. R. & Thorpe, M. R. Apple bud and blossom temperatures. Journal of Horticultural Science 49, 227–239; 10.1080/00221589.1974.11514574 (1974).
 #     - HAMER, P. The heat balance of apple buds and blossoms. Part I. Heat transfer in the outdoor environment. Agricultural and Forest Meteorology 35, 339–352; 10.1016/0168-1923(85)90094-2 (1985).
@@ -12,7 +18,7 @@
 #     - Jones, H. G. Plants and microclimate. A quantitative approach to environmental plant physiology (Cambridge university press, Cambridge, 2013). --> provides absroptivity values for leaves and needles
 ############################################################
 # Inputs:
-# Tbud: leaf temperature (K)
+# Tbud: Bud temperature (K)
 # T_air: air temperature (K) 
 # P: atmospheric pressure (kPa)
 # RH: relative humidity (0-1)
@@ -30,7 +36,7 @@
 
 ############################################################
 
-Ebalance<-function(Tbud,T_air,P,RH, Sw,Lw,wind,bud_d,abs_sw=0.5,Ebal_only=FALSE){
+Ebalance<-function(Tbud,T_air,P,RH, Sw,Lw,wind,bud_d=0.005,abs_sw=0.5,r=0.2,Ebal_only=FALSE){
   
   # constants
   c_p =  1.01 # Heat capacity of air J / (g * K)
@@ -42,8 +48,8 @@ Ebalance<-function(Tbud,T_air,P,RH, Sw,Lw,wind,bud_d,abs_sw=0.5,Ebal_only=FALSE)
   R = 8.3144598 # Ideal gas constant J / (mol * K)
   R_air = 287.058 # Specific gas constant for dry air J / (kg * K)
   s = 5.67e-08 # Stefan-Boltzmann constant W / (m ^ 2 * K ^ 4)
-  #abs_sw = 0.5 # leaf absorptivity for shortwave radiation defined by the user
-  abs_lw = 0.97 # leaf absorptivity for longwave radiation
+  #abs_sw = 0.5 # bud absorptivity for shortwave radiation defined by the user
+  abs_lw = 0.97 # bud absorptivity for longwave radiation
   
   ## 1. Estimates energy balance for given environmental conditions
   ## 1.1 Total absorbed radiation in W m^-2 
@@ -52,9 +58,9 @@ Ebalance<-function(Tbud,T_air,P,RH, Sw,Lw,wind,bud_d,abs_sw=0.5,Ebal_only=FALSE)
   # La and Lg are the atmosphere and ground emitted radiation respectively
   # Here Lg is estimated from air temperature, while soil temperature is generally higher than air
 
-  # r = soil albedo defined to 0.2 as in Muir 2019 
-  r = 0.2
-  R_abs = abs_sw * (1 + r) * Sw + ((abs_lw * Lw ) + (abs_lw * s *  T_air ^ 4))/2 # Can be replaced by real soil T instead of T_air
+  # r = soil albedo. Default defined to 0.2 as in Muir 2019 
+  
+  R_abs = abs_sw * (1 + r) * Sw + ((abs_lw * Lw ) + (abs_lw * s *  T_air ^ 4))/2 # Should be replaced by real soil T instead of T_air
 
   
   ## 1.2 re-emitted longwave radiation in W m^-2 : Foster and Smith 1986
@@ -99,9 +105,9 @@ Ebalance<-function(Tbud,T_air,P,RH, Sw,Lw,wind,bud_d,abs_sw=0.5,Ebal_only=FALSE)
   
   # In general, when the Archimedes number (also called the Richardson number) Ar=Gr/Re2≪0.1`, free convection dominates; when Ar=Gr/Re2≫10`, forced convection dominates (Nobel 2009). 
   
-  nu_cst = nu_constant(Re,1,T_air,Tbud,1)
+  nu_cst = nu_constant(Re,1,T_air,Tbud)
   Nu_forced = nu_cst$a * Re ^ nu_cst$b 
-  nu_cst = nu_constant(Re,2,T_air,Tbud,1)
+  nu_cst = nu_constant(Re,2,T_air,Tbud)
   Nu_free =  nu_cst$a * Gr ^ nu_cst$b
 
   # N Checked equation here for sphere. 
@@ -150,7 +156,8 @@ nu_constant<-function(Re,type,T_air,Tbud){
       a = 0.54
       b = 0.25
   }
-  ############### Values for leaves avilable in the tealeaves package, Muir 2019 ##################
+  ############### Values for leaves available in the tealeaves package, Muir 2019 ##################
+  # Note that in Muir 2019, an additional arguement "surface" is needed, corresponding to the upper or lower surface of the leaf
   #  if (type==1) { # type = forced
   #   # laminar flow
   #   if (Re <= 4000){
@@ -177,23 +184,21 @@ nu_constant<-function(Re,type,T_air,Tbud){
                b=b))
 }
 
+# Function from Muir (2019) for leaves
 Virtual_Temp<-function (temp,P,RH=1){
   # P = 101.3246 # kPa
   # temp in K
+  # RH (0-1), assumed to be 100% in the bud
   epsilon = 0.622 # ratio of water to air molar masses
-  p_s = 10 ^ (-7.90298 * (373.16 / temp - 1) + 
-                5.02808 * log10(373.16 / temp) - 
-                1.3816e-7 * (10 ^ (11.344 * (1 - temp / 373.16) - 1)) + 
-                8.1328e-3 * (10 ^ (-3.49149 * (373.16 / temp - 1)) - 1) + 
+  p_s = 10 ^ (-7.90298 * (373.16 / temp - 1) +
+                5.02808 * log10(373.16 / temp) -
+                1.3816e-7 * (10 ^ (11.344 * (1 - temp / 373.16) - 1)) +
+                8.1328e-3 * (10 ^ (-3.49149 * (373.16 / temp - 1)) - 1) +
                 log10(P*10)) # P*10 --> hPa
   p_s = p_s*RH
-  # virtual temperature for leaves Eq. 2.35 in Monteith & Unsworth (2013) applied here for buds
+  # virtual temperature of leaf Eq. 2.35 in Monteith & Unsworth (2013)
   Tv = temp / (1 - (1 - epsilon) * (p_s*0.1 / P)) #p_s*0.1--> kPa
   return(Tv)
 }
 
-sh_constant = function(type, unitless) {
-    a = 0.33 #forced
-    if (type==2) a= 0.25
-    return(a)
-}
+

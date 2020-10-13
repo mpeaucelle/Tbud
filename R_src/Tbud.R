@@ -23,7 +23,7 @@ Tbud<-function(inputs){
   inputs$RH<-qair2rh(qair = inputs$qair,temp = inputs$tair-273.15,press = inputs$patm*10)
   
   .f <- function(Tbud, inputs) {
-    eb <- Ebalance(Tbud,inputs$tair,inputs$patm,inputs$RH, inputs$Sw,inputs$Lw,inputs$wind,bud_d=0.005,abs_sw=inputs$abs_sw,Ebal_only=TRUE)
+    eb <- Ebalance(Tbud,inputs$tair,inputs$patm,inputs$RH, inputs$Sw,inputs$Lw,inputs$wind,bud_d=inputs$bud_d,abs_sw=inputs$abs_sw,r=inputs$r,Ebal_only=TRUE)
     return(eb)
   }
   
