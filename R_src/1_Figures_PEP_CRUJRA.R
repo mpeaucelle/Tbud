@@ -29,11 +29,18 @@ all_db<-rbind(db_AH,db_AG,db_BP,db_FE,db_FS,db_QR)
 
 ################# Function to compute mean yearly values 
 meanVal.fn<-function(db){
-  # We see that we only have a few sites for 2016, we remove it. 
+  # We remove sites for which climate data (at 0.5°) are NA (i.e. along the coast, sea pixel)
+  db<-db[which(!is.na(db$TGP)),]
+
+  # We focus only on the 1990-2015 period. 
+  db<-db[db$YEAR>1989,]
   db<-db[db$YEAR<2016,]
-  # We remove sites with less than 10 years of observations. 
-  leq<-which(table(db$PEP_ID)>10)
-  db<-db[db$PEP_ID%in%names(table(db$PEP_ID))[leq],]
+  # We remove sites with less than 20 years of observations per species. 
+ 
+  ID<-paste0(db$SPECIES,db$PEP_ID)
+
+  leq<-which(table(ID)>20)
+  db<-db[ID%in%names(table(ID))[leq],]
   
   # we compute mean value with all sites pooled together
   
@@ -48,6 +55,7 @@ meanVal.fn<-function(db){
   LWPm<-by(data=db$LWP,INDICES=as.numeric(db$YEAR),FUN=mean,na.rm=T)
   TGPm<-by(data=db$TGP,INDICES=as.numeric(db$YEAR),FUN=mean,na.rm=T)
   DAYm<-by(data=db$DAY,INDICES=as.numeric(db$YEAR),FUN=mean,na.rm=T)
+  WINDm<-by(data=db$WINDP,INDICES=as.numeric(db$YEAR),FUN=mean,na.rm=T)
   
   dif08<-TBP08m-TGPm
   dif05<-TBP05m-TGPm
@@ -70,6 +78,7 @@ meanVal.fn<-function(db){
   sdSW<-by(data=db$SWP,INDICES=as.numeric(db$YEAR),FUN=sd,na.rm=T)
   sdLW<-by(data=db$LWP,INDICES=as.numeric(db$YEAR),FUN=sd,na.rm=T)
   sdTG<-by(data=db$TGP,INDICES=as.numeric(db$YEAR),FUN=sd,na.rm=T)
+  sdWIND<-by(data=db$WINDP,INDICES=as.numeric(db$YEAR),FUN=sd,na.rm=T) 
   sd05<-by(data=c(db$TBP05-db$TGP),INDICES=as.numeric(db$YEAR),FUN=sd,na.rm=T)
   sd08<-by(data=c(db$TBP08-db$TGP),INDICES=as.numeric(db$YEAR),FUN=sd,na.rm=T)
   sdGDD<-by(data=db$FORC,INDICES=as.numeric(db$YEAR),FUN=sd,na.rm=T)
@@ -92,6 +101,7 @@ meanVal.fn<-function(db){
               SWPm=SWPm,
               LWPm=LWPm,
               TGPm=TGPm,
+              WINDm=WINDm,
               DAYm=DAYm,
               GDDm=GDDm,
               GDD08m=GDD08m,
@@ -113,6 +123,7 @@ meanVal.fn<-function(db){
               sdLW=sdLW,
               sdSW=sdSW,
               sdTG=sdTG,
+	      sdWIND=sdWIND,
               sdR05=sdR05,
               sdR08=sdR08,
               sdH05=sdH05,
@@ -121,13 +132,8 @@ meanVal.fn<-function(db){
               sdS08=sdS08))
 }
 
-AG<-meanVal.fn(db_AG)
-AH<-meanVal.fn(db_AH)
-BP<-meanVal.fn(db_BP)
-FE<-meanVal.fn(db_FE)
-FS<-meanVal.fn(db_FS)
-QR<-meanVal.fn(db_QR)
 
+# Analysis performed with all data, can be applied on species data
 ALL<-meanVal.fn(all_db)
 
 
@@ -145,178 +151,123 @@ plot.fn<-function(db,axes=F){
   }
   add.error.bars(X=as.numeric(names(db$TGPm)),Y=db$dif08,SEX=0,SEY=db$sd08/2,w=0,col="black")
   add.error.bars(X=as.numeric(names(db$TGPm)),Y=db$dif05,SEX=0,SEY=db$sd05/2,w=0,col="grey50")
-  
-  lm1.0<-lm(db$dif08~c(1970:2015))
-  lm1.1<-lm(db$dif08[1:18]~c(1970:1987))
-  lm1.2<-lm(db$dif08[21:46]~c(1990:2015))
-  
-  lm2.0<-lm(db$dif05~c(1970:2015))
-  lm2.1<-lm(db$dif05[1:18]~c(1970:1987))
-  lm2.2<-lm(db$dif05[21:46]~c(1990:2015))
-  
-  abline(lm1.0,lty=2,lwd=2,col="blue")
-  abline(lm2.0,lty=2,lwd=2,col="blue")
-  
-  segments(x0=1970,y0=(coef(lm1.1)[1]+1970*coef(lm1.1)[2]),x1=1989,y1=(coef(lm1.1)[1]+1989*coef(lm1.1)[2]),col="darkred",lwd=2)
-  segments(x0=1990,y0=(coef(lm1.2)[1]+1990*coef(lm1.2)[2]),x1=2015,y1=(coef(lm1.2)[1]+2015*coef(lm1.2)[2]),col="darkred",lwd=2)
-  
-  segments(x0=1970,y0=(coef(lm2.1)[1]+1970*coef(lm2.1)[2]),x1=1989,y1=(coef(lm2.1)[1]+1989*coef(lm2.1)[2]),col="darkred",lwd=2)
-  segments(x0=1990,y0=(coef(lm2.2)[1]+1990*coef(lm2.2)[2]),x1=2015,y1=(coef(lm2.2)[1]+2015*coef(lm2.2)[2]),col="darkred",lwd=2)
-  
 }
 
 
-pdf("Supp_Fig1.pdf",width=10,height=10)
 
-layout(matrix(1:6, ncol=2, byrow=TRUE))
-par(oma=c(5, 5, 5, 5), mar=c(0, 0, 0, 0))
-
-# A. glutinosa
-plot.fn(AG)
-axis(2,cex.axis=2)
-axis(3,cex.axis=2)
-box()
-# A. hippocastanum
-plot.fn(AH)
-axis(3,cex.axis=2)
-axis(4,cex.axis=2)
-box()
-# B. pendula
-plot.fn(BP)
-axis(2,cex.axis=2)
-box()
-# F. sylvatica
-plot.fn(FS)
-axis(4,cex.axis=2)
-box()
-# F. excelsior
-plot.fn(FE)
-axis(1,cex.axis=2)
-axis(2,cex.axis=2)
-box()
-# Q. robur
-plot.fn(QR)
-axis(1,cex.axis=2)
-axis(4,cex.axis=2)
-box()
-
-dev.off()
-
-pdf("Figure_3a.pdf",width=10,height=10)
+pdf("Supplementary_Figure_3.pdf",width=10,height=10)
 plot.fn(ALL,axes = T)
 dev.off()
 
-###### Now we plot environmental conditions and average budburst date with all sites pooled together
-plot.env<-function(db){
-  par(mfrow=c(2,2),mar=c(5,5,2,2))
-  plot(db$DAYm~as.numeric(names(db$DAYm)),pch=16,xlab="Year",ylab="Budburst date (d)",cex=2,cex.axis=2,cex.lab=2,col="black",ylim=c(min(db$DAYm-db$sdBB/2),max(db$DAYm+db$sdBB/2)))
-  add.error.bars(X=as.numeric(names(db$sdBB)),Y=db$DAYm,SEX=0,SEY=db$sdBB/2,w=0,col="black")
-  plot(db$SWPm~as.numeric(names(db$SWPm)),pch=16,xlab="Year",ylab="Preseason SW (W m-2)",cex=2,cex.axis=2,cex.lab=2,col="black",ylim=c(min(db$SWPm-db$sdSW/2),max(db$SWPm+db$sdSW/2)))
-  add.error.bars(X=as.numeric(names(db$sdSW)),Y=db$SWPm,SEX=0,SEY=db$sdSW/2,w=0,col="black")
-  plot(db$LWPm~as.numeric(names(db$LWPm)),pch=16,xlab="Year",ylab=" Preseason LW (W m-2)",cex=2,cex.axis=2,cex.lab=2,col="black", ylim=c(min(db$LWPm-db$sdLW/2),max(db$LWPm+db$sdLW/2)))
-  add.error.bars(X=as.numeric(names(db$sdLW)),Y=db$LWPm,SEX=0,SEY=db$sdLW/2,w=0,col="black")
-  plot(db$TGPm~as.numeric(names(db$TGPm)),pch=16,xlab="Year",ylab=" Preseason Temp. (C)",cex=2,cex.axis=2,cex.lab=2,col="black",ylim=c(min(db$TGPm-db$sdTG/2),max(db$TGPm+db$sdTG/2)))
-  add.error.bars(X=as.numeric(names(db$sdTG)),Y=db$TGPm,SEX=0,SEY=db$sdTG/2,w=0,col="black")
-  
-}
 
-pdf("Figure_3b.pdf",width = 10,height = 10)
-plot.env(ALL)
-dev.off()
-
-
-pdf("Supp_Fig3b-8b.pdf",width = 10,height = 10)
-plot.env(AH)
-plot.env(AG)
-plot.env(BP)
-plot.env(FE)
-plot.env(FS)
-plot.env(QR)
-dev.off()
-
-pdf("Supp_Fig3a-8a.pdf",width = 10,height = 10)
-plot.fn(AH,axes = T)
-plot.fn(AG,axes = T)
-plot.fn(BP,axes = T)
-plot.fn(FE,axes = T)
-plot.fn(FS,axes = T)
-plot.fn(QR,axes = T)
-dev.off()
-
-
-###### We see from the above Figure an abrupt change in budburst dynamics between 1970-1990 and 1990-2015, inducing an abrupt change in preseason radiation. 
-###### This is the reason why we investigate the 1990-2015 period from now. 
+###### We look at site level trends in deltaT
 db<-all_db
 db<-db[db$YEAR>1989,]
 db<-db[db$YEAR<2016,]
-# We remove sites with less than 10 years of observations. 
+# We remove sites with less than 20 years of observations. 
 db<-db[which(!is.na(db$TGP)),]
-leq<-which(table(db$PEP_ID)>10)
-db<-db[db$PEP_ID%in%names(table(db$PEP_ID))[leq],]
+ID<-paste0(db$SPECIES,db$PEP_ID)
+
+leq<-which(table(ID)>20)
+db<-db[ID%in%names(table(ID))[leq],]
+
+ID<-paste0(db$SPECIES,db$PEP_ID)
+# length(unique(db$PEP_ID))
+# [1] 2960 sites with >20 years of observations between 1990 and 2015
 
 # we compute yearly average
-dbm<-meanVal.fn(db)
-pdf("Supp_Fig2.pdf",width=10,height=10)
-par(mar=c(6,6,2,2))
+dbm<-meanVal.fn(all_db)
 
-PEPid<-unique(db$PEP_ID)
+PEPid<-unique(ID)
 dif08<-db$TBP08-db$TGP
 lm_list<-list()
-leq<-which(db$PEP_ID==PEPid[1])
+leq<-which(ID==PEPid[1])
 lm_list[[1]]<-lm(dif08[leq]~db$YEAR[leq])  
 
-# empty plot to scale axes
-plot(dif08[leq]~db$YEAR[leq], col=NULL,xlab=NULL,ylab=NULL,xaxt='n',yaxt='n',ann=FALSE,ylim=c(0.6,1.4),xlim=c(1990,2015))
-abline(lm_list[[1]],col="coral")
 # we store the slope, latitude and elevation to see if it explains the observed behavior
 sl<-lm_list[[1]]$coefficients[2]
 lat<-db$LAT[leq][1]
 elv<-db$ALT[leq][1]
 for (i in 2:length(PEPid)){
-  leq<-which(db$PEP_ID==PEPid[i])
+  leq<-which(ID==PEPid[i])
   lm_list[[i]]<-lm(dif08[leq]~db$YEAR[leq]) 
   lat<-c(lat,db$LAT[leq][1])
   elv<-c(elv,db$ALT[leq][1])
   if (summary(lm_list[[i]])$coefficients[8]<0.1){ # we plot only sites with a significant trend, pval<0.1
     sl<-c(sl,lm_list[[i]]$coefficients[2])
-    if(lm_list[[i]]$coefficients[2]<0){
-      abline(lm_list[[i]],col="dodgerblue")  
-    }else {
-      abline(lm_list[[i]],col="coral")  
-    }
   } else {
     sl<-c(sl,NA)
   }
 }
+
+
+# We extract sites with a positive and negative trend in deltaT
+posID<-PEPid[which(sl>0)]
+negID<-PEPid[which(sl<0)]
+
+posDB<-db[ID%in%posID,]
+negDB<-db[ID%in%negID,]
+
+posDBm<-meanVal.fn(posDB)
+negDBm<-meanVal.fn(negDB)
+
+pdf("Supplementary_Figure_3b.pdf",width=10,height=10)
+
+plot(c(dbm$TBP08m-dbm$TGPm)~as.numeric(names(dbm$TGPm)),ylim=c(0.4,1.8),pch=16,xlab=NULL,ylab=NULL,xaxt='n',yaxt='n',ann=FALSE,cex=2)
 par(new=T)
-plot(c(dbm$TBP08m-dbm$TGPm)~as.numeric(names(dbm$TGPm)),ylim=c(0.6,1.4),pch=16,xlab="YEAR",ylab=expression(paste("T"[bud], "-T"[air], " (°C)")),cex=2,cex.axis=3,cex.lab=3)
+plot(c(posDBm$TBP08m-posDBm$TGPm)~as.numeric(names(posDBm$TGPm)),ylim=c(0.4,1.8),pch=16,xlab=NULL,ylab=NULL,xaxt='n',yaxt='n',ann=FALSE,cex=2,col="darkorange")
+par(new=T)
+plot(c(negDBm$TBP08m-negDBm$TGPm)~as.numeric(names(negDBm$TGPm)),ylim=c(0.4,1.8),pch=16,xlab="YEAR",ylab=expression(paste("T"[bud], "-T"[air], " (°C)")),cex=2,cex.axis=3,cex.lab=3,col="dodgerblue")
 add.error.bars(X=c(1990:2016),Y=c(dbm$TBP08m-dbm$TGPm),SEX=0,SEY=dbm$sd08/2,w=0,col="black")
+add.error.bars(X=c(1990:2016),Y=c(posDBm$TBP08m-posDBm$TGPm),SEX=0,SEY=posDBm$sd08/2,w=0,col="darkorange")
+add.error.bars(X=c(1990:2016),Y=c(negDBm$TBP08m-negDBm$TGPm),SEX=0,SEY=negDBm$sd08/2,w=0,col="dodgerblue")
+
 lm1<-lm(c(dbm$TBP08m-dbm$TGPm)~c(1990:2015))
-
+summary(lm1)
 segments(x0=1990,y0=(coef(lm1)[1]+1990*coef(lm1)[2]),x1=2016,y1=(coef(lm1)[1]+2016*coef(lm1)[2]),col="black",lwd=3)
-
-##### check slope distribution
-hist(sl,cex.axis=3,cex.lab=3,xlab="slope",main=NULL,breaks=c(seq(-0.6,0.6,0.05)), col = c(rep("dodgerblue",12),rep("coral",13)))
+lm1<-lm(c(posDBm$TBP08m-posDBm$TGPm)~c(1990:2015))
+summary(lm1)
+segments(x0=1990,y0=(coef(lm1)[1]+1990*coef(lm1)[2]),x1=2016,y1=(coef(lm1)[1]+2016*coef(lm1)[2]),col="darkorange",lwd=3)
+lm1<-lm(c(negDBm$TBP08m-negDBm$TGPm)~c(1990:2015))
+summary(lm1)
+segments(x0=1990,y0=(coef(lm1)[1]+1990*coef(lm1)[2]),x1=2016,y1=(coef(lm1)[1]+2016*coef(lm1)[2]),col="dodgerblue",lwd=3)
 
 dev.off()
+# number of site*species with >20y of data
+#> length(sl)
+#[1] 5050
+# number of site*species with positive deltaT trend
+#> length(which(sl>0))
+#[1] 902  # 18% of sites
+# number of site*species with negative deltaT trend
+#> length(which(sl<0))
+#[1] 356 # 7% of sites 
+
 
 # check effect of latitude and elevation
 plot(sl~lat)
 plot(sl~elv)
 # latitude and elevation do not explain the slope. 
 
-# Mean GDD
-# with Tair
-mean(db$FORC,na.rm=T)
-sd(db$FORC,na.rm=T)
+# plot sites Supp Figure 2
 
-# with Tbud, alpha=0.8
-mean(db$FORCB08,na.rm=T)
-sd(db$FORCB08,na.rm=T)
+library(ggplot2)
+library("rnaturalearth")
+library("rnaturalearthdata")
 
-# with Tbud, alpha=0.5
-mean(db$FORCB05,na.rm=T)
-sd(db$FORCB05,na.rm=T)
+coord<-unique(cbind(db$LON,db$LAT))
+world <- ne_countries(scale = "medium", returnclass = "sf")
+
+
+sites <- data.frame(longitude = coord[,1], latitude = coord[,2])
+
+pdf("Supplementary_Figure2.pdf",width=12,height=10)
+ggplot(data = world) + theme_bw() +
+    geom_sf() +
+    geom_point(data = sites, aes(x = longitude, y = latitude), size = 2,
+        shape = 23, fill = "darkred") +
+    coord_sf(xlim = c(-10, 30), ylim = c(40, 60), expand = FALSE)
+dev.off()
 
 
 ########### Finally we look at the components of the energy budget in explaining the variability in deltaT
@@ -328,7 +279,7 @@ df<-as.data.frame(cbind(DIF=dif08,RABS=db$RABS08m,H=db$H08m,SR=db$Sr08m))
 lm_m<-glm(DIF~RABS+H+SR,data = df)
 
 summary(lm_m)
-pdf("Figure_4.pdf",width=10,height=10)
+pdf("Supplementary_Figure_4.pdf",width=10,height=10)
 par(mar=c(6,6,2,2))
 par(mfrow=c(2,2))
 

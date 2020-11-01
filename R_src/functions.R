@@ -62,7 +62,9 @@ fTbud<-function(x,abs_sw){
                Sw=sw_tmp[x],
                Lw=lw_tmp[x],
                wind=wind_tmp[x],
-               abs_sw=abs_sw)
+               abs_sw=abs_sw,
+               bud_d=0.005,
+               r=0.2)
   
   tmp<-Tbud(inputs)-273.15
   return(tmp)
@@ -77,7 +79,9 @@ fEbal<-function(x,abs_sw,ind,Tbud){
                Sw=sw_tmp[x],
                Lw=lw_tmp[x],
                wind=wind_tmp[x],
-               abs_sw=abs_sw)
+               abs_sw=abs_sw,
+               bud_d=0.005,
+               r=0.2)
   inputs$RH<-qair2rh(qair = inputs$qair,temp = inputs$tair-273.15,press = inputs$patm*10)
   
   tmp<-Ebalance(Tbud[x]+273.15,inputs$tair,inputs$patm,inputs$RH, inputs$Sw,inputs$Lw,inputs$wind,bud_d=0.005,abs_sw=inputs$abs_sw,Ebal_only=FALSE)

@@ -184,7 +184,6 @@ nu_constant<-function(Re,type,T_air,Tbud){
                b=b))
 }
 
-# Function from Muir (2019) for leaves
 Virtual_Temp<-function (temp,P,RH=1){
   # P = 101.3246 # kPa
   # temp in K

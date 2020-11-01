@@ -40,6 +40,7 @@ i<-paste0(workdir,"betula_pendula_database.txt") # see PEP_database_template.txt
 
 #### if running for several species with a batch script
 #i<-paste0(workdir,"db_site/",args[1])
+#spname<-args[2]
 spname<-"betula"
 # We restrict the analysis to the 1990-2016 period
 first_year<-1970
@@ -80,7 +81,8 @@ time<-as.Date(time,origin="1968-12-31")
 themask<-var.get.nc(nc_tg,"mask")
 
 # mean elevation of CRUJRA pixels for temperature correction
-alt<-open.nc(paste0(workdir,"netcdf_forcing/crujra_alti.nc"))
+#alt<-open.nc(paste0(workdir,"netcdf_forcing/crujra_alti.nc"))
+alt<-open.nc(paste0(workdir,"netcdf_forcing/force1994_2002.nc"))
 alti<-var.get.nc(alt,"altitude")
 
 rast_mask<-raster(t(themask),xmn=min(lon),xmx=max(lon),ymn=min(lat),ymx=max(lat))
@@ -150,7 +152,7 @@ pre_date<-sos_date-90 # 3 month, fixed date for preseason
 # longterm annual tg, pp, sw, lw
 tg_lt<-sw_lt<-lw_lt<-NULL
 # preseason  tg, sw, lw
-tg_pre<-sw_pre<-lw_pre<-NULL
+tg_pre<-sw_pre<-lw_pre<-wind_pre<-NULL
 
 # preseason bud temperature and associated energy budget components for an absorptivity of 0.8 and 0.5
 tbud08_pre<-tbud05_pre<-NULL
@@ -259,7 +261,8 @@ for (j in 1:length(refpoint)){
     tg_pre[lequel]<-sapply(X=c(1:length(start_date)),FUN=pmean,clim=tg_tmp,simplify=T)
     sw_pre[lequel]<-sapply(X=c(1:length(start_date)),FUN=pmean,clim=sw_tmp,simplify=T)
     lw_pre[lequel]<-sapply(X=c(1:length(start_date)),FUN=pmean,clim=lw_tmp,simplify=T)
-    
+    wind_pre[lequel]<-sapply(X=c(1:length(start_date)),FUN=pmean,clim=wind_tmp,simplify=T)
+ 
     tbud08_pre[lequel]<-sapply(X=c(1:length(start_date)),FUN=pmean,clim=tg_bud08,simplify=T)
     tbud05_pre[lequel]<-sapply(X=c(1:length(start_date)),FUN=pmean,clim=tg_bud05,simplify=T)    
     
@@ -309,7 +312,7 @@ for (j in 1:length(refpoint)){
 ################## merge data ######################
 
 new_db<-as.data.frame(cbind(LU_db,tg_lt,sw_lt,lw_lt,
-                            tg_pre,tbud08_pre,tbud05_pre,sw_pre,lw_pre,
+                            tg_pre,tbud08_pre,tbud05_pre,sw_pre,lw_pre,wind_pre,
                             tg_min,tg_max,
                             tbud08_min,tbud08_max,
                             tbud05_min,tbud05_max,
@@ -321,7 +324,7 @@ new_db<-as.data.frame(cbind(LU_db,tg_lt,sw_lt,lw_lt,
 
 names(new_db)<-c(names(LU_db),"TGLT","SWLT","LWLT",
                  "TGP","TBP08","TBP05",
-                 "SWP","LWP",
+                 "SWP","LWP","WINDP",
                  "TPMIN","TPMAX",
                  "TBP08_MIN","TBP08_MAX",
                  "TBP05_MIN","TBP05_MAX",
@@ -331,6 +334,8 @@ names(new_db)<-c(names(LU_db),"TGLT","SWLT","LWLT",
                  "RABS08_MIN","RABS05_MIN","H08_MIN","H05_MIN",
                  "RABS08_MAX","RABS05_MAX","H08_MAX","H05_MAX")
 
-saveRDS(object = new_db,paste(spname,"_Tbud.rds",sep=""))
-write.csv(new_db,"Betula_Tbud.csv",col.names=T,sep=";")
+
+saveRDS(object = new_db,paste0(spname,"_Tbud.rds"),compress = TRUE)
+write.csv(new_db,paste0(spname,"_Tbud.csv"),col.names=T,sep=";")
+
 q(save='n')
