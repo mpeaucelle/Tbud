@@ -17,7 +17,7 @@ bibliography: bibliography.bib
 
 *Article acceptance date:* under review
 
-This R-Markdown document provides the instructions for executing the analysis and producing figures presented in the paper *Plants phenological sensitivity to warming resides in their energy budget* by Peaucelle, Penuelas and Verbeeck (2020, submitted). 
+This R-Markdown document provides the instructions for executing the analysis and producing figures presented in the paper *Plants phenological sensitivity to warming lies in their energy budget* by Peaucelle, Penuelas and Verbeeck (2020, submitted). 
 All data used for the analyses are freely available after registration on the respective website: 
 
 * PEP data: http://www.pep725.eu/
@@ -30,7 +30,7 @@ These data are under specific licence, this is the reason why we did not provide
 All code [in this repository](https://github.com/mpeaucelle/Tbud) is free software. It may be redistributed and/or modified under the terms of the GNU General Public License as published by the Free Software Foundation, version 3. Present code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License (file `./LICENSE`) for more details.
 
 In case you use or modify this code, please cite the original work as: 
-XXX citation XXX 
+Peaucelle, Penuelas and Verbeeck (2020), Plants phenological sensitivity to warming lies in their energy budget, *under review*
 
 Copyright (C) 2020  Marc Peaucelle
 
@@ -46,22 +46,22 @@ $$
 \mathrm{R}_{\mathrm{abs}} = \mathrm{\alpha}_{\mathrm{SW}}(1+r)SW + \mathrm{\alpha}_{\mathrm{LW}} (\mathrm{LW}_{\mathrm{sky}}+\mathrm{LW}_{\mathrm{gnd}})/2
 $$
 where ${\mathrm{\alpha}_{\mathrm{SW}}}$ is the bud absorptivity to SW; r is the fraction of SW reflected by the ground and ${\mathrm{\alpha}_{\mathrm{LW}}}$ is the bud absorptivity to LW, which is here defined as the average of LW coming from the atmosphere ${\mathrm{LW}_{\mathrm{sky}}}$ and coming from the ground ${\mathrm{LW}_{\mathrm{gnd}}}$. 
-LW emitted by surrounding objects such as branches were considered negligible. Since no data were available in the literature, we set ${\mathrm{\alpha}_{\mathrm{LW}}}$ to 0.97, which corresponds to the average absorptivity for leaves and needles [@Jones2013]. We tested two different values of ${\mathrm{\alpha}_{\mathrm{SW}}}$, 0.5 and 0.8, corresponding to values commonly used for leaves and needles, respectively. We set r to 0.2, which corresponds to a reasonable value for the fraction of SW reflected by grasses. Of course, r will strongly vary according to the albedo of the ground (e.g. understory/grass, forest litter, snow, etc.), which was simplified here for our perspective. 
+LW emitted by surrounding objects such as branches were considered negligible. We set ${\mathrm{\alpha}_{\mathrm{LW}}}$ to 0.97, which corresponds to the average absorptivity for wood and leaves [@Jones2013,@dupleix2013,@howard2013]. Since no data were available in the literature, we tested two different values of ${\mathrm{\alpha}_{\mathrm{SW}}}$, 0.5 and 0.8, corresponding to values commonly used for leaves and needles, respectively. We set r to 0.2, which corresponds to a reasonable value for the fraction of SW reflected by grasses. Of course, r will strongly vary according to the albedo of the ground (e.g. understory/grass, forest litter, snow, etc.), which was simplified here for our perspective. 
 
-![*Illustration of the bud energy budget.*](../Figures/Bud_E.png){ width=50% }
+![*Illustration of the bud energy budget.*](../Figures/Bud_E.png){}
 
 In our example, we simplified the estimation of ${\mathrm{LW}_{\mathrm{gnd}}}$ by considering that ground temperature equals air temperature:
 $$
-\mathrm{LW}_{\mathrm{gnd}} = \mathrm{\sigma}\mathrm{\alpha}_{\mathrm{LW}}\mathrm{T}_{\mathrm{air}}^4
+\mathrm{LW}_{\mathrm{gnd}} = \mathrm{\sigma}\mathrm{\varepsilon}\mathrm{T}_{\mathrm{air}}^4
 $$
-where $\mathrm{\sigma}$ is the Stefan-Boltzmann constant and ${\mathrm{\alpha}_{\mathrm{LW}}}$ is the bud emissivity (which is equal to its absorptivity) to longwave radiations. 
+where $\mathrm{\sigma}$ is the Stefan-Boltzmann constant and ${\mathrm{\varepsilon}}$ is the bud emissivity (which is equal to its absorptivity) to longwave radiations. 
 This is an important oversimplification to keep in mind since ground temperature will strongly depend on soil type, vegetation and snow cover, soil humidity, but also the fact that soil heat capacity is generally higher than air.
 
 Buds lose thermal infrared radiation proportionally to their temperature as: 
 $$
-\mathrm{LW}_{\mathrm{bud}} = \mathrm{\sigma}\mathrm{\alpha}_{\mathrm{LW}}\mathrm{T}_{\mathrm{bud}}^4
+\mathrm{LW}_{\mathrm{bud}} = \mathrm{\sigma}\mathrm{\varepsilon}\mathrm{T}_{\mathrm{bud}}^4
 $$
-where $\mathrm{\sigma}$ is the Stefan-Boltzmann constant and ${\mathrm{\alpha}_{\mathrm{LW}}}$ is the bud emissivity (which is equal to its absorptivity) to longwave radiations.
+where $\mathrm{\sigma}$ is the Stefan-Boltzmann constant and ${\mathrm{\varepsilon}}$ is the bud emissivity (which is equal to its absorptivity) to longwave radiations.
 
 Finally, the sensible heat flux depends on the air to bud temperature gradient and is formulated as in Muir [-@Muir2019]: 
 $$
@@ -70,10 +70,16 @@ $$
 where $\mathrm{P}_{a}$ is the density of dry air; $\mathrm{C}_{\mathrm{p}}$ is the specific heat capacity of air at constant pressure and $\mathrm{g}_{\mathrm{b}}$ is the boundary-layer conductance to heat. 
 
 In our example, we simplified bud’s shape as a spherical object with a diameter of 5 mm to computes the boundary-layer conductance to heat. Please refers to Hamer [-@Hamer1985] for a detailed discussion of this assumption, as well as empirical formulations for the convective heat transfer of apple buds. Condition for laminar and turbulent flows, as well as constants a, b, c and d for a spherical object can be found in Monteith and Unsworth [-@Monteith2013].
-
+In addition, we performed two simulations varying ground albedo from 0.1 (~wet bare soil) to 0.9 (~snow) and bud diameter from 5 to 13 mm (Supplementary Figure 5 and 6) 
+The bud energy model simulates bud temperature in idealized conditions, without distinction between species and sites and several simplifications as described above. Note that a proper calibration for species and site properties is needed to use this model for robust predictions. 
 
 ### Bud temperature estimation
 Bud temperature was estimated by solving for the equilirium of the energy budget at each time-step (30 min for FLUXNET, 6 h for CRU-JRA) and for each site. 
+
+\textcolor{red}{\textbf{!!! Important Note}}: This model is simplified to represent idealized conditions.
+To have robust simulations of bud temperature and to use this approach to model phenology, 
+a proper calibration of model parameters, including bud traits (e.g. solar absorptivity, size and shape), but also the surrounding environment (e.g. ground albedo and soil temperature)
+Running the model with micrometeorological data should also produce better results for bud temperature
 
 ## Process sequence
 The following provides a documentation and instruction to reproduce results and figures presented in the paper. 
@@ -126,10 +132,10 @@ PEP and CRU-JRA raw data were processed following these steps for each species:
 
 
 ### 3. Data analysis
-#### PEP data (Figures 3 and 4, Supplementary Figures 1-8)
+#### PEP data (Supplementary Figures 2, 3 and 4)
 Processed .rds data files in  `./database/` contain for each site all the data used for analyses and for plotting the figures presented in the paper. 
 
-The script `1_Figures_PEP_CRUJRA.R` plots Figures 3 and 4 and Supplementary Figures 1-8. 
+The script `1_Figures_PEP_CRUJRA.R` plots Supplementary Figures 2, 3 and 4. 
 To generate the figures simply run the script as: 
 ```{r eval=FALSE}
 source("1_Figures_PEP_CRUJRA.R")
@@ -138,13 +144,13 @@ source("1_Figures_PEP_CRUJRA.R")
 This script executes the following tasks: 
 
 1. Load .rds data for each species and merge them all in a unique variable with all species and sites togethers
-2. Select sites with at least 10 observations
-3. Computes mean yearly values (and standard deviation) with all sites pooled together, by species and for all species over 1970-2015
-4. Generate Figures with yearly data
+2. Select sites with at least 20 years of observations over 1990-2015
+3. Computes mean yearly values (and standard deviation) with all sites and species pooled together
+4. Generate Figures
 
 
-#### FLUXNET data (Figure 1b and 2)
-The script `2_Figures_Fluxnet.R` plots Figures 1b and 2 from FLUXNET data. As mentioned above, FLUXNET data are not provided in the repository, but are freely accessible after registration on the dedicated website. 
+#### FLUXNET data (Figure 2a and 2b, Supplementary Figures 1, 5 and 6)
+The script `2_Figures_Fluxnet.R` plots Figures 2a and 2b, as well as Supplementary Figures 1, 5 and 6 from FLUXNET data. As mentioned above, FLUXNET data are not provided in the repository, but are freely accessible after registration on the dedicated website. 
 
 To generate the figures, please format raw FLUXNET data according to the netcdf template file `template_fluxnet.nc` provided in the `templates` folder and adjust the netcdf file name in the script ` 2_Figures_Fluxnet.R`: 
 
@@ -162,6 +168,7 @@ This script executes the following tasks:
 1. Load Fluxnet data
 2. Computes Bud temperature with two different solar absorptivity by calling the function Tbud in Tbud.R
 3. Computes Chilling and forcing requirement of buds from air temperature and bud temperature
+4. Generate analysis by varying bud diameter and ground albedo
 4. Generate Figures
 
 ## References

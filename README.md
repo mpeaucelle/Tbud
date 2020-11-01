@@ -18,7 +18,8 @@ install.packages("rmarkdown", type = "source")
 rmarkdown::render_site()
 ```
 
-Please also note the data use policy, described in `./R_src/Tbud_perspective.Rmd` and `./LICENSE`. When using this code, please cite the paper Peaucelle, Penuelas and Verbeeck (2020) *submitted*.
+Please also note the data use policy, described in `./R_src/Tbud_perspective.Rmd` and `./LICENSE`. When using this code, please cite the paper:
+Peaucelle, Penuelas and Verbeeck (2020), Plants phenological sensitivity to warming lies in their energy budget, *under review*.
 This code is also available on [Zenodo](https://zenodo.org/XXX), where the latest version corresponds to tag `XXX `.
 
-Marc Peaucelle, 16.07.2020
+Marc Peaucelle, 01.11.2020
