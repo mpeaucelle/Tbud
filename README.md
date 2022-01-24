@@ -1,6 +1,6 @@
 # Tbud
 
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4173415.svg)](https://doi.org/10.5281/zenodo.4173415)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.5897267.svg)](https://doi.org/10.5281/zenodo.5897267)
 
 This repository contains all R code and datasets to reproduce the analysis used for the paper *Toward better phenology analyses based on bud traits and energy budget*.
 
@@ -20,6 +20,6 @@ rmarkdown::render_site()
 
 Please also note the data use policy, described in `./R_src/Tbud_perspective.Rmd` and `./LICENSE`. When using this code, please cite the paper:
 Peaucelle, Penuelas and Verbeeck (2022), Toward better phenology analyses based on bud traits and energy budget, *under review*.
-This code is also available on [Zenodo](https://doi.org/10.5281/zenodo.4173415), where the latest version corresponds to tag `v2.0.0 `.
+This code is also available on [Zenodo](https://doi.org/10.5281/zenodo.5897267), where the latest version corresponds to tag `v2.0.0 `.
 
 Marc Peaucelle, 17.01.2022
