@@ -18,14 +18,16 @@ add.error.bars <- function(X,Y,SEX,SEY,w,col=1,lwd=1.5){
 
 ############### First we look at preseason environmental conditions over 1970-2015
 # This script runs for Betula pendula. Simply change the dataset to generate figures for other species
-db_AG<-readRDS("database/Alnus_Tbud1970-2016.rds")
-db_AH<-readRDS("database/Aesculus_Tbud1970-2016.rds")
-db_BP<-readRDS("database/Betula_Tbud1970-2016.rds")
-db_FS<-readRDS("database/Fagus_Tbud1970-2016.rds")
-db_FE<-readRDS("database/Fraxinus_Tbud1970-2016.rds")
-db_QR<-readRDS("database/Quercus_Tbud1970-2016.rds")
+db_AG<-readRDS("databases/Alnus_Tbud_1990-2015.rds")
+db_AH<-readRDS("databases/Aesculus_Tbud_1990-2015.rds")
+db_BP<-readRDS("databases/Betula_Tbud_1990-2015.rds")
+db_FS<-readRDS("databases/Fagus_Tbud_1990-2015.rds")
+db_FE<-readRDS("databases/Fraxinus_Tbud_1990-2015.rds")
+db_QR<-readRDS("databases/Quercus_Tbud_1990-2015.rds")
 
 all_db<-rbind(db_AH,db_AG,db_BP,db_FE,db_FS,db_QR)
+
+#/home/orchidee04/mpeau/Tsol_ERA5
 
 ################# Function to compute mean yearly values 
 meanVal.fn<-function(db){
@@ -33,15 +35,19 @@ meanVal.fn<-function(db){
   db<-db[which(!is.na(db$TGP)),]
 
   # We focus only on the 1990-2015 period. 
-  db<-db[db$YEAR>1989,]
-  db<-db[db$YEAR<2016,]
+  #db<-db[db$YEAR>1989,]
+  #db<-db[db$YEAR<2016,]
   # We remove sites with less than 20 years of observations per species. 
  
   ID<-paste0(db$SPECIES,db$PEP_ID)
 
   leq<-which(table(ID)>20)
   db<-db[ID%in%names(table(ID))[leq],]
-  
+ 
+
+  db$TBP05<-db$TBP05-273.15
+  db$TBP08<-db$TBP08-273.15
+ 
   # we compute mean value with all sites pooled together
   
   TBP05m<-by(data=db$TBP05,INDICES=as.numeric(db$YEAR),FUN=mean,na.rm=T)
@@ -66,12 +72,15 @@ meanVal.fn<-function(db){
   H05m<-by(data=db$H05,INDICES=as.numeric(db$YEAR),FUN=mean,na.rm=T)
   H08m<-by(data=db$H08,INDICES=as.numeric(db$YEAR),FUN=mean,na.rm=T)
   
-  Sr05<-db$RABS05-db$H05
-  Sr08<-db$RABS08-db$H08
+  Sr05<-db$RABS05-db$H05-db$E05
+  Sr08<-db$RABS08-db$H08-db$E08
   
   Sr05m<-by(data=Sr05,INDICES=as.numeric(db$YEAR),FUN=mean,na.rm=T)
   Sr08m<-by(data=Sr08,INDICES=as.numeric(db$YEAR),FUN=mean,na.rm=T)
-  
+ 
+  E05m<-by(data=db$E05,INDICES=as.numeric(db$YEAR),FUN=mean,na.rm=T)
+  E08m<-by(data=db$E08,INDICES=as.numeric(db$YEAR),FUN=mean,na.rm=T)
+ 
     
   # We estimate associated sd
   sdBB<-by(data=db$DAY,INDICES=as.numeric(db$YEAR),FUN=sd,na.rm=T)
@@ -91,6 +100,9 @@ meanVal.fn<-function(db){
   sdH05<-by(data=c(db$H05),INDICES=as.numeric(db$YEAR),FUN=sd,na.rm=T)
   sdH08<-by(data=c(db$H08),INDICES=as.numeric(db$YEAR),FUN=sd,na.rm=T)
   
+  sdE05<-by(data=c(db$E05),INDICES=as.numeric(db$YEAR),FUN=sd,na.rm=T)
+  sdE08<-by(data=c(db$E08),INDICES=as.numeric(db$YEAR),FUN=sd,na.rm=T)
+
   sdS05<-by(data=Sr05,INDICES=as.numeric(db$YEAR),FUN=sd,na.rm=T)
   sdS08<-by(data=Sr08,INDICES=as.numeric(db$YEAR),FUN=sd,na.rm=T)
   
@@ -112,6 +124,8 @@ meanVal.fn<-function(db){
               RABS08m=RABS08m,
               H05m=H05m,
               H08m=H08m,
+              E05m=E05m,
+	      E08m=E08m,
               Sr05m=Sr05m,
               Sr08m=Sr08m,
               sd05=sd05,
@@ -128,6 +142,8 @@ meanVal.fn<-function(db){
               sdR08=sdR08,
               sdH05=sdH05,
               sdH08=sdH08,
+              sdE05=sdE05,
+              sdE08=sdE08,
               sdS05=sdS05,
               sdS08=sdS08))
 }
@@ -155,15 +171,15 @@ plot.fn<-function(db,axes=F){
 
 
 
-pdf("Supplementary_Figure_3.pdf",width=10,height=10)
+pdf("Figure_3.pdf",width=10,height=10)
 plot.fn(ALL,axes = T)
 dev.off()
 
 
 ###### We look at site level trends in deltaT
 db<-all_db
-db<-db[db$YEAR>1989,]
-db<-db[db$YEAR<2016,]
+#db<-db[db$YEAR>1989,]
+#db<-db[db$YEAR<2016,]
 # We remove sites with less than 20 years of observations. 
 db<-db[which(!is.na(db$TGP)),]
 ID<-paste0(db$SPECIES,db$PEP_ID)
@@ -177,7 +193,9 @@ ID<-paste0(db$SPECIES,db$PEP_ID)
 
 # we compute yearly average
 dbm<-meanVal.fn(all_db)
-
+pdf("Supp_Fig2.pdf",width=10,height=10)
+par(mar=c(6,6,2,2))
+dev.off()
 PEPid<-unique(ID)
 dif08<-db$TBP08-db$TGP
 lm_list<-list()
@@ -211,26 +229,28 @@ negDB<-db[ID%in%negID,]
 posDBm<-meanVal.fn(posDB)
 negDBm<-meanVal.fn(negDB)
 
-pdf("Supplementary_Figure_3b.pdf",width=10,height=10)
+pdf("Supp_Fig3.pdf",width=10,height=10)
+#ylim=c(0.4,1.8)
+ylim=c(0,0.6)
 
-plot(c(dbm$TBP08m-dbm$TGPm)~as.numeric(names(dbm$TGPm)),ylim=c(0.4,1.8),pch=16,xlab=NULL,ylab=NULL,xaxt='n',yaxt='n',ann=FALSE,cex=2)
+plot(c(dbm$TBP08m-dbm$TGPm)~as.numeric(names(dbm$TGPm)),ylim=ylim,pch=16,xlab=NULL,ylab=NULL,xaxt='n',yaxt='n',ann=FALSE,cex=2)
 par(new=T)
-plot(c(posDBm$TBP08m-posDBm$TGPm)~as.numeric(names(posDBm$TGPm)),ylim=c(0.4,1.8),pch=16,xlab=NULL,ylab=NULL,xaxt='n',yaxt='n',ann=FALSE,cex=2,col="darkorange")
+plot(c(posDBm$TBP08m-posDBm$TGPm)~as.numeric(names(posDBm$TGPm)),ylim=ylim,pch=16,xlab=NULL,ylab=NULL,xaxt='n',yaxt='n',ann=FALSE,cex=2,col="darkorange")
 par(new=T)
-plot(c(negDBm$TBP08m-negDBm$TGPm)~as.numeric(names(negDBm$TGPm)),ylim=c(0.4,1.8),pch=16,xlab="YEAR",ylab=expression(paste("T"[bud], "-T"[air], " (°C)")),cex=2,cex.axis=3,cex.lab=3,col="dodgerblue")
-add.error.bars(X=c(1990:2016),Y=c(dbm$TBP08m-dbm$TGPm),SEX=0,SEY=dbm$sd08/2,w=0,col="black")
-add.error.bars(X=c(1990:2016),Y=c(posDBm$TBP08m-posDBm$TGPm),SEX=0,SEY=posDBm$sd08/2,w=0,col="darkorange")
-add.error.bars(X=c(1990:2016),Y=c(negDBm$TBP08m-negDBm$TGPm),SEX=0,SEY=negDBm$sd08/2,w=0,col="dodgerblue")
+plot(c(negDBm$TBP08m-negDBm$TGPm)~as.numeric(names(negDBm$TGPm)),ylim=ylim,pch=16,xlab="YEAR",ylab=expression(paste("T"[bud], "-T"[air], " (°C)")),cex=2,cex.axis=3,cex.lab=3,col="dodgerblue")
+add.error.bars(X=c(1990:2015),Y=c(dbm$TBP08m-dbm$TGPm),SEX=0,SEY=dbm$sd08/2,w=0,col="black")
+add.error.bars(X=c(1990:2015),Y=c(posDBm$TBP08m-posDBm$TGPm),SEX=0,SEY=posDBm$sd08/2,w=0,col="darkorange")
+add.error.bars(X=c(1990:2015),Y=c(negDBm$TBP08m-negDBm$TGPm),SEX=0,SEY=negDBm$sd08/2,w=0,col="dodgerblue")
 
 lm1<-lm(c(dbm$TBP08m-dbm$TGPm)~c(1990:2015))
 summary(lm1)
-segments(x0=1990,y0=(coef(lm1)[1]+1990*coef(lm1)[2]),x1=2016,y1=(coef(lm1)[1]+2016*coef(lm1)[2]),col="black",lwd=3)
+segments(x0=1990,y0=(coef(lm1)[1]+1990*coef(lm1)[2]),x1=2015,y1=(coef(lm1)[1]+2015*coef(lm1)[2]),col="black",lwd=3)
 lm1<-lm(c(posDBm$TBP08m-posDBm$TGPm)~c(1990:2015))
 summary(lm1)
-segments(x0=1990,y0=(coef(lm1)[1]+1990*coef(lm1)[2]),x1=2016,y1=(coef(lm1)[1]+2016*coef(lm1)[2]),col="darkorange",lwd=3)
+segments(x0=1990,y0=(coef(lm1)[1]+1990*coef(lm1)[2]),x1=2015,y1=(coef(lm1)[1]+2015*coef(lm1)[2]),col="darkorange",lwd=3)
 lm1<-lm(c(negDBm$TBP08m-negDBm$TGPm)~c(1990:2015))
 summary(lm1)
-segments(x0=1990,y0=(coef(lm1)[1]+1990*coef(lm1)[2]),x1=2016,y1=(coef(lm1)[1]+2016*coef(lm1)[2]),col="dodgerblue",lwd=3)
+segments(x0=1990,y0=(coef(lm1)[1]+1990*coef(lm1)[2]),x1=2015,y1=(coef(lm1)[1]+2015*coef(lm1)[2]),col="dodgerblue",lwd=3)
 
 dev.off()
 # number of site*species with >20y of data
@@ -273,29 +293,46 @@ dev.off()
 ########### Finally we look at the components of the energy budget in explaining the variability in deltaT
 
 db<-ALL
+db<-negDBm
+
 dif08<-c((db$TBP08m-db$TGPm))
-df<-as.data.frame(cbind(DIF=dif08,RABS=db$RABS08m,H=db$H08m,SR=db$Sr08m))
+df<-as.data.frame(cbind(DIF=dif08,RABS=db$RABS08m,H=db$H08m,E=db$E08m,SR=db$Sr08m))
 ###### multiple linear regression 
-lm_m<-glm(DIF~RABS+H+SR,data = df)
+#lm_m<-glm(DIF~RABS+H+SR+E,data = df)
+lm_m<-lm(DIF~RABS+H+SR+E,data = df)
 
 summary(lm_m)
 pdf("Supplementary_Figure_4.pdf",width=10,height=10)
 par(mar=c(6,6,2,2))
 par(mfrow=c(2,2))
+ylim=c(0.6,1.4)
+#plot(db$RABS08m/500~as.numeric(names(db$TGPm)),ylim=ylim,pch=16,xlab="YEAR",ylab="Value",cex=2,cex.axis=2,cex.lab=2,col="darkred")
 
-plot(db$RABS08m/500~as.numeric(names(db$TGPm)),ylim=c(0,1.6),pch=16,xlab="YEAR",ylab="Value",cex=2,cex.axis=2,cex.lab=2,col="darkred")
+plot(scale(db$RABS08m,center=F)~as.numeric(names(db$TGPm)),ylim=ylim,pch=16,xlab="YEAR",ylab="Value",cex=2,cex.axis=2,cex.lab=2,col="darkred")
+
 par(new=T)
-plot(db$H08m/100~as.numeric(names(db$TGPm)),ylim=c(0,1.6),col="darkorange",pch=16,cex=2,xlab=NULL,ylab=NULL,xaxt='n',yaxt='n',ann=FALSE)
+#plot(db$H08m/50~as.numeric(names(db$TGPm)),ylim=ylim,col="darkorange",pch=16,cex=2,xlab=NULL,ylab=NULL,xaxt='n',yaxt='n',ann=FALSE)
+plot(scale(db$H08m,center=F)~as.numeric(names(db$TGPm)),ylim=ylim,col="darkorange",pch=16,cex=2,xlab=NULL,ylab=NULL,xaxt='n',yaxt='n',ann=FALSE)
+
 par(new=T)
-plot(db$Sr08m/500~as.numeric(names(db$TGPm)),ylim=c(0,1.6),col="dodgerblue3",pch=16,cex=2,xlab=NULL,ylab=NULL,xaxt='n',yaxt='n',ann=FALSE)
+#plot(db$Sr08m/500~as.numeric(names(db$TGPm)),ylim=ylim,col="dodgerblue3",pch=16,cex=2,xlab=NULL,ylab=NULL,xaxt='n',yaxt='n',ann=FALSE)
+plot(scale(db$Sr08m,center=F)~as.numeric(names(db$TGPm)),ylim=ylim,col="dodgerblue3",pch=16,cex=2,xlab=NULL,ylab=NULL,xaxt='n',yaxt='n',ann=FALSE)
+
+#par(new=T)
+#plot(db$E08m/20~as.numeric(names(db$TGPm)),ylim=ylim,col="darkgreen",pch=16,cex=2,xlab=NULL,ylab=NULL,xaxt='n',yaxt='n',ann=FALSE)
+#plot(scale(db$E08m,center=F)~as.numeric(names(db$TGPm)),ylim=ylim,col="darkgreen",pch=16,cex=2,xlab=NULL,ylab=NULL,xaxt='n',yaxt='n',ann=FALSE)
+
 par(new=T)
-plot(db$dif08~as.numeric(names(db$TGPm)),ylim=c(0,1.6),col="black",pch=16,cex=2,xlab=NULL,ylab=NULL,xaxt='n',yaxt='n',ann=FALSE)
-add.error.bars(X=c(1970:2015),Y=db$RABS08m/500,SEX=0,SEY=db$sdR08/1000,w=0,col="darkred")
-add.error.bars(X=c(1970:2015),Y=db$H08m/100,SEX=0,SEY=db$sdH08/200,w=0,col="darkorange")
-add.error.bars(X=c(1970:2015),Y=db$Sr08m/500,SEX=0,SEY=db$sdS08/1000,w=0,col="dodgerblue3")
-add.error.bars(X=c(1970:2015),Y=c((db$TBP08m-db$TGPm)),SEX=0,SEY=db$sd08/2,w=0,col="black")
+#plot(db$dif08~as.numeric(names(db$TGPm)),ylim=ylim,col="black",pch=16,cex=2,xlab=NULL,ylab=NULL,xaxt='n',yaxt='n',ann=FALSE)
+plot(scale(db$dif08,center=F)~as.numeric(names(db$TGPm)),ylim=ylim,col="black",pch=16,cex=2,xlab=NULL,ylab=NULL,xaxt='n',yaxt='n',ann=FALSE)
+
+add.error.bars(X=c(1990:2015),Y=db$RABS08m/500,SEX=0,SEY=db$sdR08/1000,w=0,col="darkred")
+add.error.bars(X=c(1990:2015),Y=db$H08m/50,SEX=0,SEY=db$sdH08/100,w=0,col="darkorange")
+add.error.bars(X=c(1990:2015),Y=db$Sr08m/500,SEX=0,SEY=db$sdS08/1000,w=0,col="dodgerblue3")
+#add.error.bars(X=c(1990:2015),Y=db$E08m/20,SEX=0,SEY=db$sdE08/40,w=0,col="darkgreen")
+add.error.bars(X=c(1990:2015),Y=c((db$TBP08m-db$TGPm)),SEX=0,SEY=db$sd08/2,w=0,col="black")
 
 
-termplot(lm_m,partial.resid = T,col.res = "grey30", se=T,col.se = "darkred",col.term = "darkred",pch=1,cex=2.5,lwd.se=2.5,lwd.term = 2.5,cex.axis=2,cex.lab=2,xlabs=c("Rabs (W m-2)","H (W m-2)","LWbud (W m-2)"),ylabs=rep("Part. res. (°C)"))
+termplot(lm_m,partial.resid = T,col.res = "grey30", se=T,col.se = "darkred",col.term = "darkred",pch=1,cex=2.5,lwd.se=2.5,lwd.term = 2.5,cex.axis=2,cex.lab=2,xlabs=c("Rabs (W m-2)","H (W m-2)","LWbud (W m-2)","E (W m-2)"),ylabs=rep("Part. res. (°C)"))
 dev.off()
 

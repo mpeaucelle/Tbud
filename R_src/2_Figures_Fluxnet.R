@@ -250,7 +250,7 @@ tbud13_min<-apply.daily(tg_bud13[period]-273.15,min)
 colfunc_ave <- colorRampPalette(c("grey50", "black"))
 colfunc_min <- colorRampPalette(c("lightblue", "darkblue"))
 colfunc_max <- colorRampPalette(c("darkorange", "darkred"))
-pdf("Supplementary_Figure_6.pdf",width=10,height=10)
+pdf("Figure_bud_size.pdf",width=10,height=10)
 # plot rolling mean for Tave
 plot(na.approx(cbind(rollmean(c(tbud07_mean-tbud05_mean),10),rollmean(c(tbud10_mean-tbud05_mean),10),rollmean(c(tbud13_mean-tbud05_mean),10),
 rollmean(c(tbud07_min-tbud05_min),10),rollmean(c(tbud10_min-tbud05_min),10),rollmean(c(tbud13_min-tbud05_min),10),
@@ -302,7 +302,7 @@ tbud09_min<-apply.daily(tg_bud09[period]-273.15,min)
 colfunc_ave <- colorRampPalette(c("grey50", "black"))
 colfunc_min <- colorRampPalette(c("lightblue", "darkblue"))
 colfunc_max <- colorRampPalette(c("darkorange", "darkred"))
-pdf("Supplementary_Figure_5.pdf",width=10,height=10)
+pdf("Figure_albedo.pdf",width=10,height=10)
 # plot rolling mean for Tave
 plot(na.approx(cbind(rollmean(c(tbud05_mean-tbud01_mean),10),rollmean(c(tbud09_mean-tbud01_mean),10),
 rollmean(c(tbud05_min-tbud01_min),10),rollmean(c(tbud09_min-tbud01_min),10),

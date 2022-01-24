@@ -55,39 +55,59 @@ psum<-function(clim,x){
 
 
 # function to computes bud temperature
-fTbud<-function(x,abs_sw){
-  inputs<-list(tair=tg_tmp[x]+273.15,
-               patm=pb_tmp[x]/1000,
+fTbud<-function(x,abs_sw,bud_d=0.005,r=0.2,md,tstep,evap=TRUE,max_wd=0.15){
+   inputs<-list(tair=tg_tmp[x]+273.15,
+               tground=sol_tmp[x],
+               patm=pb_tmp[x],
+               RH=rh_tmp[x],
                qair=qair_tmp[x],
                Sw=sw_tmp[x],
                Lw=lw_tmp[x],
                wind=wind_tmp[x],
+               rain=rain_tmp[x],
                abs_sw=abs_sw,
-               bud_d=0.005,
-               r=0.2)
+               bud_d=bud_d,
+               r=r,
+               evap=evap,
+               md=md,
+               max_dw=max_wd,
+               tstep=tstep)
   
-  tmp<-Tbud(inputs)-273.15
+  tmp<-Tbud(inputs,abs_sw = abs_sw,bud_d = bud_d)
   return(tmp)
 }
 
 # function to retrieve the corresponding energy budget components at Tbud
-fEbal<-function(x,abs_sw,ind,Tbud){
-  
-  inputs<-list(tair=tg_tmp[x]+273.15,
-               patm=pb_tmp[x]/1000,
-               qair=qair_tmp[x],
-               Sw=sw_tmp[x],
-               Lw=lw_tmp[x],
-               wind=wind_tmp[x],
-               abs_sw=abs_sw,
-               bud_d=0.005,
-               r=0.2)
-  inputs$RH<-qair2rh(qair = inputs$qair,temp = inputs$tair-273.15,press = inputs$patm*10)
-  
-  tmp<-Ebalance(Tbud[x]+273.15,inputs$tair,inputs$patm,inputs$RH, inputs$Sw,inputs$Lw,inputs$wind,bud_d=0.005,abs_sw=inputs$abs_sw,Ebal_only=FALSE)
-  return(tmp[[ind]])
-}
 
+
+fEbal <- function(x,abs_sw,bud_d=0.005,r=0.2,tstep,evap,max_dw=0.15) {
+ # print(x)
+  inputs<-list(tair=as.numeric(tg_tmp[x])+273.15,
+               tground=as.numeric(sol_tmp[x]),
+               patm=as.numeric(pb_tmp[x])/1000,
+               RH=as.numeric(rh_tmp[x]),
+               qair=as.numeric(qair_tmp[x]),
+               Sw=as.numeric(sw_tmp[x]),
+               Lw=as.numeric(lw_tmp[x]),
+               wind=as.numeric(wind_tmp[x]),
+               rain=as.numeric(rain_tmp[x]),
+               abs_sw=abs_sw,
+               bud_d=bud_d,
+               r=r,
+               evap=evap,
+               md=md,
+               max_dw=max_dw,
+               tstep=tstep)
+  
+  Tb<-Tbud(inputs,abs_sw = abs_sw,bud_d = bud_d)
+  
+  eb <- Ebalance(Tb,inputs$tair,inputs$tground,inputs$patm,inputs$RH, inputs$qair, inputs$Sw,inputs$Lw,inputs$wind, inputs$rain,
+                 bud_d=bud_d, abs_sw=abs_sw, r=inputs$r, 
+                 evap = inputs$evap, md = inputs$md, max_dw = inputs$max_dw, 
+                 tstep = inputs$tstep, Ebal_only=FALSE)
+  md<<-eb$md
+  return(eb) 
+}
 
 # computes chilling
 fchil<-function(x,xts.v,alti_CRU=NULL,alti_obs=NULL){
@@ -122,11 +142,17 @@ fforc5<-function(x,xts.v,alti_CRU=NULL,alti_obs=NULL){
 }
 
 # add bisextile days
-bis.fn<-function(xts.v,bisextile){
-  tmp_v<-c(xts.v[1:bisextile[1]])
-  for(i in 2:length(bisextile)){
-    tmp_v<-c(tmp_v,xts.v[bisextile[i-1]:bisextile[i]])
+bis.fn<-function(xts.v,bisextile,tstep=1){
+  nb_it=length(bisextile)/tstep
+
+  tmp_v<-c(xts.v[1:bisextile[tstep]])
+  
+  for(i in 2:nb_it){
+    tmp_v<-c(tmp_v,xts.v[bisextile[(i-2)*tstep+1]:bisextile[i*tstep]])
   }
-  tmp_v<-c(tmp_v,xts.v[bisextile[i]:length(xts.v)])
+ 
+ if(bisextile[length(bisextile)]!=length(xts.v)){
+    tmp_v<-c(tmp_v,xts.v[bisextile[(i-2)*tstep+1]:length(xts.v)])
+  }
   return(tmp_v)
 }
