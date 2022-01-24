@@ -1,5 +1,5 @@
 ---
-title: Supplementary information to "Plants phenological sensitivity to warming lies in their energy budget"
+title: Supplementary information to "Toward better phenology analyses based on bud traits and energy budget"
 author: "Marc Peaucelle, Josep Penuelas and Hans Verbeeck"
 date: "`r Sys.Date()`"
 output:
@@ -15,14 +15,15 @@ bibliography: bibliography.bib
 
 ## Overview
 
-*Article acceptance date:* under review
+*Article acceptance date:* submitted
 
-This R-Markdown document provides the instructions for executing the analysis and producing figures presented in the paper *Plants phenological sensitivity to warming lies in their energy budget* by Peaucelle, Penuelas and Verbeeck (2020, submitted). 
+This R-Markdown document provides the instructions for executing the analysis and producing figures presented in the paper *Toward better phenology analyses based on bud traits and energy budget* by Peaucelle, Penuelas and Verbeeck (submitted). 
 All data used for the analyses are freely available after registration on the respective website: 
 
 * PEP data: http://www.pep725.eu/
 * CRU-JRA data: https://catalogue.ceda.ac.uk/uuid/13f3635174794bb98cf8ac4b0ee8f4ed
 * FLUXNET data: https://fluxnet.fluxdata.org/data/fluxnet2015-dataset/
+* ERA5 data: Downloaded from https://cds.climate.copernicus.eu/cdsapp#!/dataset/reanalysis-era5-land?tab=form with the KrigR package
 
 These data are under specific licence, this is the reason why we did not provide raw data but only processed data in the `database` folder, and file templates in the `templates` folder.  Further information about data processing and creating the data file is given below (section 'Data processing'). Using RMarkdown and open access code available through github (https://github.com/mpeaucelle/Tbud) this is supposed to allow for full reproducibility of published results - from publicly accessible data files to published figures. 
 
@@ -30,7 +31,7 @@ These data are under specific licence, this is the reason why we did not provide
 All code [in this repository](https://github.com/mpeaucelle/Tbud) is free software. It may be redistributed and/or modified under the terms of the GNU General Public License as published by the Free Software Foundation, version 3. Present code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License (file `./LICENSE`) for more details.
 
 In case you use or modify this code, please cite the original work as: 
-Peaucelle, Penuelas and Verbeeck (2020), Plants phenological sensitivity to warming lies in their energy budget, *under review*
+Peaucelle, Penuelas and Verbeeck (2022), Toward better phenology analyses based on bud traits and energy budget, *under review*
 
 Copyright (C) 2020  Marc Peaucelle
 
@@ -43,7 +44,7 @@ $$
 $$
 The amount of absorbed energy by buds is the sum of incoming shortwave (SW, visible and near-infrared) and longwave (LW, infrared) radiations:
 $$
-\mathrm{R}_{\mathrm{abs}} = \mathrm{\alpha}_{\mathrm{SW}}(1+r)SW + \mathrm{\alpha}_{\mathrm{LW}} (\mathrm{LW}_{\mathrm{sky}}+\mathrm{LW}_{\mathrm{gnd}})/2
+\mathrm{R}_{\mathrm{abs}} = \mathrm{\alpha}_{\mathrm{SW}}(1+r)SW + \mathrm{\alpha}_{\mathrm{LW}} (\mathrm{LW}_{\mathrm{sky}}+\mathrm{LW}_{\mathrm{gnd}})
 $$
 where ${\mathrm{\alpha}_{\mathrm{SW}}}$ is the bud absorptivity to SW; r is the fraction of SW reflected by the ground and ${\mathrm{\alpha}_{\mathrm{LW}}}$ is the bud absorptivity to LW, which is here defined as the average of LW coming from the atmosphere ${\mathrm{LW}_{\mathrm{sky}}}$ and coming from the ground ${\mathrm{LW}_{\mathrm{gnd}}}$. 
 LW emitted by surrounding objects such as branches were considered negligible. We set ${\mathrm{\alpha}_{\mathrm{LW}}}$ to 0.97, which corresponds to the average absorptivity for wood and leaves [@Jones2013,@dupleix2013,@howard2013]. Since no data were available in the literature, we tested two different values of ${\mathrm{\alpha}_{\mathrm{SW}}}$, 0.5 and 0.8, corresponding to values commonly used for leaves and needles, respectively. We set r to 0.2, which corresponds to a reasonable value for the fraction of SW reflected by grasses. Of course, r will strongly vary according to the albedo of the ground (e.g. understory/grass, forest litter, snow, etc.), which was simplified here for our perspective. 
@@ -59,22 +60,22 @@ This is an important oversimplification to keep in mind since ground temperature
 
 Buds lose thermal infrared radiation proportionally to their temperature as: 
 $$
-\mathrm{LW}_{\mathrm{bud}} = \mathrm{\sigma}\mathrm{\varepsilon}\mathrm{T}_{\mathrm{bud}}^4
+\mathrm{LW}_{\mathrm{bud}} = 2\mathrm{\sigma}\mathrm{\varepsilon}\mathrm{T}_{\mathrm{bud}}^4
 $$
 where $\mathrm{\sigma}$ is the Stefan-Boltzmann constant and ${\mathrm{\varepsilon}}$ is the bud emissivity (which is equal to its absorptivity) to longwave radiations.
 
 Finally, the sensible heat flux depends on the air to bud temperature gradient and is formulated as in Muir [-@Muir2019]: 
 $$
-\mathrm{H} = \mathrm{P}_{a}\mathrm{C}_{\mathrm{p}}\mathrm{g}_{\mathrm{b}}(\mathrm{T}_{\mathrm{bud}}-\mathrm{T}_{\mathrm{air}})
+\mathrm{H} = \mathrm{\rho}_{a}\mathrm{C}_{\mathrm{p}}\mathrm{g}_{\mathrm{b}}(\mathrm{T}_{\mathrm{bud}}-\mathrm{T}_{\mathrm{air}})
 $$
-where $\mathrm{P}_{a}$ is the density of dry air; $\mathrm{C}_{\mathrm{p}}$ is the specific heat capacity of air at constant pressure and $\mathrm{g}_{\mathrm{b}}$ is the boundary-layer conductance to heat. 
+where $\mathrm{\rho}_{a}$ is the density of dry air; $\mathrm{C}_{\mathrm{p}}$ is the specific heat capacity of air at constant pressure and $\mathrm{g}_{\mathrm{b}}$ is the boundary-layer conductance to heat. 
 
 In our example, we simplified bud’s shape as a spherical object with a diameter of 5 mm to computes the boundary-layer conductance to heat. Please refers to Hamer [-@Hamer1985] for a detailed discussion of this assumption, as well as empirical formulations for the convective heat transfer of apple buds. Condition for laminar and turbulent flows, as well as constants a, b, c and d for a spherical object can be found in Monteith and Unsworth [-@Monteith2013].
 In addition, we performed two simulations varying ground albedo from 0.1 (~wet bare soil) to 0.9 (~snow) and bud diameter from 5 to 13 mm (Supplementary Figure 5 and 6) 
 The bud energy model simulates bud temperature in idealized conditions, without distinction between species and sites and several simplifications as described above. Note that a proper calibration for species and site properties is needed to use this model for robust predictions. 
 
 ### Bud temperature estimation
-Bud temperature was estimated by solving for the equilirium of the energy budget at each time-step (30 min for FLUXNET, 6 h for CRU-JRA) and for each site. 
+Bud temperature was estimated by solving for the equilibrium of the energy budget at each time-step (30 min for FLUXNET, 6 h for CRU-JRA) and for each site. 
 
 \textcolor{red}{\textbf{!!! Important Note}}: This model is simplified to represent idealized conditions.
 To have robust simulations of bud temperature and to use this approach to model phenology, 
@@ -152,13 +153,8 @@ This script executes the following tasks:
 #### FLUXNET data (Figure 2a and 2b, Supplementary Figures 1, 5 and 6)
 The script `2_Figures_Fluxnet.R` plots Figures 2a and 2b, as well as Supplementary Figures 1, 5 and 6 from FLUXNET data. As mentioned above, FLUXNET data are not provided in the repository, but are freely accessible after registration on the dedicated website. 
 
-To generate the figures, please format raw FLUXNET data according to the netcdf template file `template_fluxnet.nc` provided in the `templates` folder and adjust the netcdf file name in the script ` 2_Figures_Fluxnet.R`: 
+To generate the figures, please use raw FLUXNET data and simply source the script with appropriate working directories 
 
-```{r eval=FALSE}
-forcing<-"FR-Hes_1997-2006.nc"
-```
-
-Finally, simply source the script. 
 ```{r eval=FALSE}
 source("2_Figures_Fluxnet.R")
 ```
