@@ -2,7 +2,7 @@
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4173415.svg)](https://doi.org/10.5281/zenodo.4173415)
 
-This repository contains all R code and datasets to reproduce the analysis used for the paper *Plants phenological sensitivity to warming lies in their energy budget*.
+This repository contains all R code and datasets to reproduce the analysis used for the paper *Toward better phenology analyses based on bud traits and energy budget*.
 
 A detailed description of the scope, method, and algorithms is given by the RMarkdown file `./R_src/Tbud_perspective.Rmd`, or the compiled pdf `./R_src/Tbud_perspective.pdf`. 
 
@@ -19,7 +19,7 @@ rmarkdown::render_site()
 ```
 
 Please also note the data use policy, described in `./R_src/Tbud_perspective.Rmd` and `./LICENSE`. When using this code, please cite the paper:
-Peaucelle, Penuelas and Verbeeck (2020), Plants phenological sensitivity to warming lies in their energy budget, *under review*.
-This code is also available on [Zenodo](https://doi.org/10.5281/zenodo.4173415), where the latest version corresponds to tag `v1.0.0 `.
+Peaucelle, Penuelas and Verbeeck (2022), Toward better phenology analyses based on bud traits and energy budget, *under review*.
+This code is also available on [Zenodo](https://doi.org/10.5281/zenodo.4173415), where the latest version corresponds to tag `v2.0.0 `.
 
-Marc Peaucelle, 01.11.2020
+Marc Peaucelle, 17.01.2022
