@@ -45,7 +45,7 @@ Ebalance<-function(Tbud, T_air, T_ground, P, RH, qair, Sw, Lw, wind, rain, bud_d
   c_w =  1.82 # Heat capacity of water J / (g * K)
   c_b = 2820.12 # Heat capacity of bud in J kg-1 C-1
   rho_b = 782.93 # density of bud in kg m-3
-  D_h0 = 1.9e-5 # Diffusion coefficient for heat in air at 0Â°C m ^ 2 /² s
+  D_h0 = 1.9e-5 # Diffusion coefficient for heat in air at 0Â°C m ^ 2 /? s
   D_m0 = 13.3e-6 # Diffusion coefficient for momentum in air at 0Â°C m ^ 2 / s
   #  D_w0 = 21.2e-6 # Diffusion coefficient for water vapour in air at 0Â°C m ^ 2 / s
   eT = 1.75 # Exponent for temperature dependence of diffusion 
@@ -63,7 +63,7 @@ Ebalance<-function(Tbud, T_air, T_ground, P, RH, qair, Sw, Lw, wind, rain, bud_d
     # Sl = surface area of the bud in m2
     Sl = 4 * pi * (bud_d/2)**2
     
-    # max_md = maximum dew mass on bud (in kg) = max water density (in mm = kg/m²) * area
+    # max_md = maximum dew mass on bud (in kg) = max water density (in mm = kg/m?) * area
     max_md = max_dw * Sl
     md = min(max_md,(md+rain*Sl))
   }
@@ -144,8 +144,8 @@ Ebalance<-function(Tbud, T_air, T_ground, P, RH, qair, Sw, Lw, wind, rain, bud_d
   
   # In general, when the Archimedes number (also called the Richardson number) Ar=Gr/Re2â‰ª0.1`, free convection dominates; when Ar=Gr/Re2â‰«10`, forced convection dominates (Nobel 2009). 
   # Chose here the shape of the object for Nusselt constants
-  #shape = "sphere"
-  shape = "cylinder"
+  shape = "sphere"
+  #shape = "cylinder"
   nu_cst = nu_constant(Re,1,T_air,Tbud,Gr,shape)
   Nu_forced = nu_cst$a1 + nu_cst$a * Re ^ nu_cst$b 
   nu_cst = nu_constant(Re,2,T_air,Tbud,Gr,shape)
@@ -175,12 +175,12 @@ Ebalance<-function(Tbud, T_air, T_ground, P, RH, qair, Sw, Lw, wind, rain, bud_d
     # Sl = surface area of the bud in m2
     Sl = 4 * pi * (bud_d/2)**2
     
-    # max_md = maximum dew mass on bud (in kg) = max water density (in mm = kg/m²) * area
+    # max_md = maximum dew mass on bud (in kg) = max water density (in mm = kg/m?) * area
     max_md = max_dw * Sl
     
     
-    # alapha_a =  thermal diffusivity of air (m² s-1)
-    # Dva = diffusivity of water vapor in air (m² s-1)
+    # alapha_a =  thermal diffusivity of air (m? s-1)
+    # Dva = diffusivity of water vapor in air (m? s-1)
     Tb = (T_air + Tbud)/2
     alpha_a = Tb * 1.32e-7 - 1.73e-5
     Dva = Tb * 1.49e-7 - 1.96e-5

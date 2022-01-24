@@ -2,8 +2,8 @@
 # 
 # Author: Marc Peaucelle, 2020/06
 # Description:
-# Script to generate Figure3, 4 and supplementary Figures of "Plants phenological sensitivity to warming lies in their energy budget" (Peaucelle, Penuelas & Verbeeck, 2020)
-# Phenological observations were replaced in the Betula database were replaced by -1
+# Script to generate Figure3, 4 and supplementary Figures of "Toward better phenology analyses based on bud traits and energy budget" (Peaucelle, Penuelas & Verbeeck, submitted)
+# Phenological observations were replaced by -1
 # Please register to the PEP website to download phenological observations that are freely available at http://www.pep725.eu/
 # Data provided in the databases were generated with the script 0.0_create_database_Tbud.R
 # 

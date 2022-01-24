@@ -24,7 +24,6 @@
 args = commandArgs(trailingOnly=TRUE)
 setwd("/home/orchidee02/mpeau/pheno_PEP/Tbud")
 
-# /home/orchidee04/mpeau/Tsol_ERA5
 #rm(list=ls())
 library(RNetCDF)
 library(raster)
@@ -38,8 +37,9 @@ source("functions.R")
 # PEP725
 # Script adapted for B.pendula only 
 # Adapt these two lines according to your environment. 
-#workdir<-"XXX workdir here XXX"
 #i<-paste0(workdir,"betula_pendula_database.txt") # see PEP_database_template.txt for the structure
+
+# workdir<-"XXX workdir here XXX"
 workdir<-"/home/orchidee02/mpeau/pheno_PEP/"
 
 #### if running for several species with a batch script
@@ -115,7 +115,7 @@ rast_alt<-raster(t(alti),xmn=min(lon),xmx=max(lon),ymn=min(lat),ymx=max(lat))
 
 print("fichiers CRU chargés")
 
-########### LOAD soil temperature data #######
+########### LOAD soil temperature data downloaded from ERA5 (see download_era5.R) #######
 nc_tsol<-open.nc("/home/orchidee04/mpeau/Tsol_ERA5/Tsol_Era5_6h.nc")
 #lat_sol<-var.get.nc(nc_tsol,"latitude")
 #lon_sol<-var.get.nc(nc_tsol,"longitude")
